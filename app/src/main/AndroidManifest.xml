@@ -18,12 +18,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".AddProduct" />
-        <activity android:name=".ProductDetails"></activity>
+        <provider
+            android:name=".data.ProductProvider"
+            android:authorities="com.example.android.inventoryapp.data.ProductProvider"
+            android:exported="false" />
     </application>
-
-    <provider
-        android:name=".ProductProvider"
-        android:authorities="com.example.android.inventoryapp.data.ProductProvider"
-        android:exported="false" />
 
 </manifest>

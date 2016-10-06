@@ -155,14 +155,14 @@ public class ProductProvider extends ContentProvider {
         SQLiteDatabase database = pDbHelper.getWritableDatabase();
 
         // Insert the new pet with the given values
-        long id = database.insert(ProductContract.ProductEntry.TABLE_NAME, null, values);
+        long id = database.update(ProductContract.ProductEntry.TABLE_NAME, values, selection, selectionArgs);
         // If the ID is -1, then the insertion failed. Log an error and return null.
         if (id == -1) {
             Log.e(LOG_TAG, "Failed to insert row for " + uri);
             return 0;
         }
         else if (id != 0) {
-            getContext().getContentResolver().notifyChange(uri, null);
+             getContext().getContentResolver().notifyChange(uri, null);
         }
 
         // Return the new URI with the ID (of the newly inserted row) appended at the end
