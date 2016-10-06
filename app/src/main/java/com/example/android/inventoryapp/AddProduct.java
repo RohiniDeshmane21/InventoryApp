@@ -2,7 +2,7 @@ package com.example.android.inventoryapp;
 
 import android.content.ContentValues;
 import android.content.Intent;
-import android.net.Uri;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -54,7 +54,7 @@ public class AddProduct extends AppCompatActivity {
 
     private void insertHabit()
     {
-       // SQLiteDatabase db = DbHelper.getWritableDatabase();
+        SQLiteDatabase db = DbHelper.getWritableDatabase();
 
         productName = (EditText)findViewById(R.id.editTextName);
         price = (EditText)findViewById(R.id.editTextPrice);
@@ -84,10 +84,10 @@ public class AddProduct extends AppCompatActivity {
             values.put(ProductContract.ProductEntry.PRICE,Double.parseDouble(price.getText().toString()));
         }
 
-        //long newRowId = db.insert(ProductContract.ProductEntry.TABLE_NAME,null,values);
+        long newRowId = db.insert(ProductContract.ProductEntry.TABLE_NAME,null,values);
 
         // Insert a new pet into the provider, returning the content URI for the new pet.
-        Uri newUri = getContentResolver().insert(ProductContract.ProductEntry.CONTENT_URI, values);
+       /* Uri newUri = getContentResolver().insert(ProductContract.ProductEntry.CONTENT_URI, values);
 
         // Show a toast message depending on whether or not the insertion was successful
         if (newUri == null) {
@@ -98,10 +98,10 @@ public class AddProduct extends AppCompatActivity {
             // Otherwise, the insertion was successful and we can display a toast.
             Toast.makeText(this, "Row added sucessfully",
                     Toast.LENGTH_SHORT).show();
-        }
+        }*/
 
-       // Toast.makeText(AddProduct.this, "Product Added Sucessfully "+newRowId,
-              //  Toast.LENGTH_LONG).show();
+        Toast.makeText(AddProduct.this, "Product Added Sucessfully "+newRowId,
+                Toast.LENGTH_LONG).show();
 
     }
 

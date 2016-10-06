@@ -48,6 +48,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/editTextName"
         android:hint="@string/product_name"
+        android:singleLine="true"
         android:layout_above="@+id/titleBar"
         android:layout_marginTop="15dp"
         android:layout_alignParentTop="true"

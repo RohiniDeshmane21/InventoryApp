@@ -33,7 +33,7 @@ public class ProductProvider extends ContentProvider {
         // should recognize. All paths added to the UriMatcher have a corresponding code to return
         // when a match is found.
         sUriMatcher.addURI(ProductContract.CONTENT_AUTHORITY,ProductContract.PATH_PRODUCT,PRODUCT);
-        sUriMatcher.addURI(ProductContract.CONTENT_AUTHORITY,ProductContract.PATH_PRODUCT,PRODUCT_ID);
+      //  sUriMatcher.addURI(ProductContract.CONTENT_AUTHORITY,ProductContract.PATH_PRODUCT,PRODUCT_ID);
         // TODO: Add 2 content URIs to URI matcher
     }
 
@@ -88,6 +88,10 @@ public class ProductProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("Cannot query unknown URI " + uri);
         }
+
+        //set notification URI on the cursor
+        cursor.setNotificationUri(getContext().getContentResolver(),uri);
+
         return cursor;
     }
 
@@ -116,6 +120,9 @@ public class ProductProvider extends ContentProvider {
             Log.e(LOG_TAG, "Failed to insert row for " + uri);
             return null;
         }
+
+        //notify all listeners
+        getContext().getContentResolver().notifyChange(uri,null);
 
         // Return the new URI with the ID (of the newly inserted row) appended at the end
         return ContentUris.withAppendedId(uri, id);
@@ -154,6 +161,9 @@ public class ProductProvider extends ContentProvider {
             Log.e(LOG_TAG, "Failed to insert row for " + uri);
             return 0;
         }
+        else if (id != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
 
         // Return the new URI with the ID (of the newly inserted row) appended at the end
        // return ContentUris.withAppendedId(uri, id);
@@ -171,6 +181,10 @@ public class ProductProvider extends ContentProvider {
         SQLiteDatabase database = pDbHelper.getWritableDatabase();
 
         final int match = sUriMatcher.match(uri);
+
+        if (match != 0)
+            getContext().getContentResolver().notifyChange(uri, null);
+
         switch (match) {
             case PRODUCT:
                 // Delete all rows that match the selection and selection args
@@ -184,6 +198,7 @@ public class ProductProvider extends ContentProvider {
                 throw new IllegalArgumentException("Deletion is not supported for " + uri);
                // return 0;
         }
+
     }
     /**
      * Returns the MIME type of data for the content URI.

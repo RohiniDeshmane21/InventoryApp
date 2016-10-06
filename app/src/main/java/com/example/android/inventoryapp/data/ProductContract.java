@@ -11,7 +11,7 @@ public class ProductContract {
 
     private ProductContract(){}
 
-    public static final String CONTENT_AUTHORITY = "com.example.android.inventoryapp";
+    public static final String CONTENT_AUTHORITY = "com.example.android.inventoryapp.data.ProductProvider";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_PRODUCT = "habits";
 
@@ -25,7 +25,6 @@ public class ProductContract {
          */
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_PRODUCT;
-
 
         public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_PRODUCT);;
 

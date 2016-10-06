@@ -22,8 +22,8 @@
     </application>
 
     <provider
-        android:name="com.example.android.inventoryapp.data.ProductProvider"
-        android:authorities="com.example.android.inventoryapp"
+        android:name=".ProductProvider"
+        android:authorities="com.example.android.inventoryapp.data.ProductProvider"
         android:exported="false" />
 
 </manifest>
