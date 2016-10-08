@@ -2,10 +2,13 @@ package com.example.android.inventoryapp.data;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.inventoryapp.R;
@@ -60,14 +63,24 @@ public class ProductCursorAdapter extends CursorAdapter {
         TextView txproductName = (TextView) view.findViewById(R.id.textViewProductName);
         TextView txprice = (TextView) view.findViewById(R.id.textViewPrice);
         TextView txquantity = (TextView)view.findViewById(R.id.textViewQuantity);
+        ImageView img = (ImageView)view.findViewById(R.id.imageView);
         // Extract properties from cursor
         String name = cursor.getString(cursor.getColumnIndexOrThrow(ProductContract.ProductEntry.PRODUCT_NAME));
         int quantity = cursor.getInt(cursor.getColumnIndexOrThrow(ProductContract.ProductEntry.QUANTITY));
         double price = cursor.getInt(cursor.getColumnIndexOrThrow(ProductContract.ProductEntry.PRICE));
+        byte[] imgbyte = cursor.getBlob(cursor.getColumnIndexOrThrow(ProductContract.ProductEntry.PHOTO));
 
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inDither = false;
+        options.inPurgeable = true;
+        options.inInputShareable = true;
+        options.inTempStorage = new byte[1024 *32];
+        Bitmap bm = BitmapFactory.decodeByteArray(imgbyte, 0, imgbyte.length, options);
+       // alert_photo.setImageBitmap(bm);
         // Populate fields with extracted properties
         txproductName.setText(name);
         txquantity.setText(String.valueOf(quantity));
         txprice.setText(String.valueOf(price));
+        img.setImageBitmap(bm);
     }
 }

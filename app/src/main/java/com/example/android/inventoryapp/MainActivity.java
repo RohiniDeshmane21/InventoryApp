@@ -11,15 +11,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-
 import com.example.android.inventoryapp.data.ProductContract;
 import com.example.android.inventoryapp.data.ProductCursorAdapter;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
-    Cursor cursor;
-    ListView lvItems;
+   // Cursor cursor;
+    private ListView lvItems;
     private static final int PRODUCT_LOADER = 0;
-    ProductCursorAdapter pAdapter;
+    private ProductCursorAdapter pAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -29,15 +28,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         // Find ListView to populate
         lvItems= (ListView) findViewById(R.id.listViewProduct);
-        View emptyView = findViewById(R.id.empty_view);
 
-        if(lvItems.getCount() < 0)
-        {
-            // Find and set empty view on the ListView, so that it only shows when the list has 0 items.
-           emptyView.setVisibility(View.VISIBLE);
-        }
-        else
-           emptyView.setVisibility(View.INVISIBLE);
+        //set up adapter and attache to list view
+        pAdapter = new ProductCursorAdapter(this,null);
+        lvItems.setAdapter(pAdapter);
+
+        //kick off the loader
+        getLoaderManager().initLoader(PRODUCT_LOADER,null,this);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -48,7 +45,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
         });
 
-
         lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -56,22 +52,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 Intent addProduct = new Intent(MainActivity.this, AddProduct.class);
                 //create bundle
                 Bundle bundle = new Bundle();
-                Cursor cur = (Cursor)parent.getItemAtPosition(position);
+                Cursor cur = (Cursor) parent.getItemAtPosition(position);
                 bundle.putLong("productId", cur.getInt(cur.getColumnIndex(ProductContract.ProductEntry._ID)));
                 bundle.putString("productName", cur.getString(cur.getColumnIndex(ProductContract.ProductEntry.PRODUCT_NAME)));
                 bundle.putInt("price", cur.getInt(cur.getColumnIndex(ProductContract.ProductEntry.PRICE)));
-                bundle.putInt("quantity",cur.getInt(cur.getColumnIndex(ProductContract.ProductEntry.QUANTITY)));
+                bundle.putInt("quantity", cur.getInt(cur.getColumnIndex(ProductContract.ProductEntry.QUANTITY)));
+                bundle.putByteArray("photo",cur.getBlob(cur.getColumnIndex(ProductContract.ProductEntry.PHOTO)));
                 addProduct.putExtras(bundle);
                 startActivity(addProduct);
             }
         });
-
-        //set up adapter and attache to list view
-        pAdapter = new ProductCursorAdapter(this,null);
-        lvItems.setAdapter(pAdapter);
-
-        //kick off the loader
-        getLoaderManager().initLoader(PRODUCT_LOADER,null,this);
     }
 
     @Override
@@ -79,14 +69,25 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         String[] projection = { ProductContract.ProductEntry._ID,
                 ProductContract.ProductEntry.PRODUCT_NAME,
                 ProductContract.ProductEntry.QUANTITY,
+                ProductContract.ProductEntry.PHOTO,
                 ProductContract.ProductEntry.PRICE };
-
         return new CursorLoader(this, ProductContract.ProductEntry.CONTENT_URI,projection,null,null,null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         pAdapter.swapCursor(data);
+
+        int cnt = lvItems.getCount();
+        View emptyView = findViewById(R.id.empty_view);
+
+        if(lvItems.getCount() == 0)
+        {
+            // Find and set empty view on the ListView, so that it only shows when the list has 0 items.
+            emptyView.setVisibility(View.VISIBLE);
+        }
+        else
+            emptyView.setVisibility(View.GONE);
     }
 
     @Override

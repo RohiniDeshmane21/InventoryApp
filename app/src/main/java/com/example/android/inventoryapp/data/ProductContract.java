@@ -34,5 +34,7 @@ public class ProductContract {
         public final static String PRODUCT_NAME = "productName";
         public final static String QUANTITY = "productQuantity";
         public final static String PRICE = "productPrice";
+        public final static String PHOTO = "photo";
+        public final static String PURCHASE_QUANTITY = "purchaseQuantity";
     }
 }

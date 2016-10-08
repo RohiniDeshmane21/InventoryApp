@@ -12,4 +12,5 @@
     <string name="delete">Delete</string>
     <string name="order">Order</string>
     <string name="edit">Edit</string>
+    <string name="purchaseQuantity">Purchase Quantity</string>
 </resources>

@@ -7,7 +7,7 @@
 
     <item
         android:id="@+id/two"
-        android:title="Order"/>
+        android:title="Purchase"/>
 
     <item
         android:id="@+id/three"
