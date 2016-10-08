@@ -1,5 +1,6 @@
 package com.example.android.inventoryapp.data;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -7,8 +8,10 @@ import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.android.inventoryapp.R;
@@ -57,17 +60,23 @@ public class ProductCursorAdapter extends CursorAdapter {
      *                correct row.
      */
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(final View view, final Context context, final Cursor cursor) {
+
+        final int[] qtyArr = new int[1];
+        final Bitmap bitmap = null;
+
         // TODO: Fill out this method
         // Find fields to populate in inflated template
-        TextView txproductName = (TextView) view.findViewById(R.id.textViewProductName);
-        TextView txprice = (TextView) view.findViewById(R.id.textViewPrice);
-        TextView txquantity = (TextView)view.findViewById(R.id.textViewQuantity);
-        ImageView img = (ImageView)view.findViewById(R.id.imageView);
+        final TextView txproductName = (TextView) view.findViewById(R.id.textViewProductName);
+        final TextView txprice = (TextView) view.findViewById(R.id.textViewPrice);
+        final TextView[] txquantity = {(TextView) view.findViewById(R.id.textViewQuantity)};
+        final ImageView img = (ImageView)view.findViewById(R.id.imageView);
+        final Button sale = (Button)view.findViewById(R.id.btnSale);
+
         // Extract properties from cursor
         String name = cursor.getString(cursor.getColumnIndexOrThrow(ProductContract.ProductEntry.PRODUCT_NAME));
-        int quantity = cursor.getInt(cursor.getColumnIndexOrThrow(ProductContract.ProductEntry.QUANTITY));
-        double price = cursor.getInt(cursor.getColumnIndexOrThrow(ProductContract.ProductEntry.PRICE));
+        final int quantity = cursor.getInt(cursor.getColumnIndexOrThrow(ProductContract.ProductEntry.QUANTITY));
+        final double price = cursor.getInt(cursor.getColumnIndexOrThrow(ProductContract.ProductEntry.PRICE));
         byte[] imgbyte = cursor.getBlob(cursor.getColumnIndexOrThrow(ProductContract.ProductEntry.PHOTO));
 
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -76,11 +85,41 @@ public class ProductCursorAdapter extends CursorAdapter {
         options.inInputShareable = true;
         options.inTempStorage = new byte[1024 *32];
         Bitmap bm = BitmapFactory.decodeByteArray(imgbyte, 0, imgbyte.length, options);
-       // alert_photo.setImageBitmap(bm);
         // Populate fields with extracted properties
         txproductName.setText(name);
-        txquantity.setText(String.valueOf(quantity));
+        txquantity[0].setText(String.valueOf(quantity));
         txprice.setText(String.valueOf(price));
         img.setImageBitmap(bm);
+
+        final View viewNw = view;
+        final TextView[] txtQty = {txquantity[0]};
+
+        sale.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (Integer.parseInt(txquantity[0].getText().toString()) > 0) {
+
+                    View parentRow = (View) v.getParent();
+                    ListView listView = (ListView) parentRow.getParent();
+                    final int position = listView.getPositionForView(parentRow);
+
+                    qtyArr[0] = Integer.parseInt(txquantity[0].getText().toString());
+
+                    qtyArr[0] = qtyArr[0] - 1;
+
+                    txtQty[0] = (TextView) view.findViewById(R.id.textViewQuantity);
+                    txquantity[0].setText(String.valueOf(qtyArr[0]));
+
+                    ContentValues values = new ContentValues();
+                    values.put(ProductContract.ProductEntry.PRODUCT_NAME, txproductName.getText().toString());
+                    values.put(ProductContract.ProductEntry.QUANTITY, (qtyArr[0]));
+                    values.put(ProductContract.ProductEntry.PRICE, Double.parseDouble(txprice.getText().toString()));
+
+                    context.getContentResolver().update(ProductContract.ProductEntry.CONTENT_URI, values, "_Id=?", new String[]{String.valueOf(position)});
+
+                }
+            }
+        });
     }
 }

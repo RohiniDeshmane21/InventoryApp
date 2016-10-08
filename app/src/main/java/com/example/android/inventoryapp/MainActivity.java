@@ -11,11 +11,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
 import com.example.android.inventoryapp.data.ProductContract;
 import com.example.android.inventoryapp.data.ProductCursorAdapter;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
-   // Cursor cursor;
     private ListView lvItems;
     private static final int PRODUCT_LOADER = 0;
     private ProductCursorAdapter pAdapter;

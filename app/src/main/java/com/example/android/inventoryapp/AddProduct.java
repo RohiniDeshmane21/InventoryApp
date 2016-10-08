@@ -1,5 +1,6 @@
 package com.example.android.inventoryapp;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -11,6 +12,7 @@ import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.KeyListener;
 import android.view.MenuItem;
@@ -135,15 +137,25 @@ public class AddProduct extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int item) {
                         if (options[item].equals("Take Photo"))
                         {
-                            Intent photoCaptureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                            startActivityForResult(photoCaptureIntent, requestCode);
-                        }
+                            // Assume thisActivity is the current activity
+                            int permissionCheck = ContextCompat.checkSelfPermission(AddProduct.this,
+                                    Manifest.permission.WRITE_CALENDAR);
+                            {
+                                Intent photoCaptureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                startActivityForResult(photoCaptureIntent, requestCode);
+
+                            }
+                         }
                         else if (options[item].equals("Choose from Gallery"))
                         {
-                            Intent galleryIntent = new Intent(
-                                    Intent.ACTION_PICK,
-                                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                            startActivityForResult(galleryIntent , RESULT_GALLERY );
+                            int permissionCheck = ContextCompat.checkSelfPermission(AddProduct.this,
+                                    Manifest.permission.WRITE_CALENDAR);
+                            {
+                                Intent galleryIntent = new Intent(
+                                        Intent.ACTION_PICK,
+                                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                startActivityForResult(galleryIntent , RESULT_GALLERY );
+                            }
                         }
                         else if (options[item].equals("Cancel")) {
                             dialog.dismiss();
@@ -198,7 +210,6 @@ public class AddProduct extends AppCompatActivity {
                                 @Override
                                 public void onClick(View v) {
 
-                                  //  getContentResolver().update(ProductContract.ProductEntry.CONTENT_URI,"_Id=?", new String[]{String.valueOf(id),})
                                     ContentValues values = new ContentValues();
                                     values.put(ProductContract.ProductEntry.PRODUCT_NAME,productName.getText().toString());
                                     values.put(ProductContract.ProductEntry.QUANTITY, (Integer.parseInt(quantity.getText().toString()) - Integer.parseInt(purchaseQuantity.getText().toString())));
@@ -207,16 +218,11 @@ public class AddProduct extends AppCompatActivity {
                                     ByteArrayOutputStream bos=new ByteArrayOutputStream();
                                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);//153*204
                                     img=bos.toByteArray();
-
                                     values.put(ProductContract.ProductEntry.PHOTO,img);
 
                                     id = bundle.getLong("productId");
                                     // Insert a new Product into the provider, returning the content URI for the new pet.
                                     getContentResolver().update(ProductContract.ProductEntry.CONTENT_URI, values, "_Id=?", new String[]{String.valueOf(id)});
-                                    //Toast.makeText(this, "Product Updated succesfully",Toast.LENGTH_SHORT).show();
-                                  //  Intent addProduct = new Intent(AddProduct.this, MainActivity.class);
-                                    //startActivity(addProduct);
-
                                     String productDetails = "Product Name : = " + pName + "\n Product Price : =  " + priceBundle + "\n Product Total Quantity : = " + quty
                                                                 +"\n Product Purchase Quantity : = "+ purchaseQuantity.getText();
                                     Intent i = new Intent(Intent.ACTION_SEND);
